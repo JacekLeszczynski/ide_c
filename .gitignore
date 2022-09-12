@@ -1,4 +1,5 @@
 lib
+backup
 ide_c
 *.xml
 *.res
