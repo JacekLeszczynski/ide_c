@@ -97,6 +97,7 @@ type
     procedure Memo1Run;
     procedure SetFiles(aIndex: integer; aFilename: string);
     function SaveFiles: boolean;
+    function IsFile(aIndex: integer; var aFile: string): boolean;
     procedure TabRestore(aIndex: integer; aFile: string);
     procedure wyszukaj(aStr: string = ''; aWstecz: boolean = false);
     procedure sfocus;
@@ -492,18 +493,44 @@ begin
   end;
 end;
 
+function TForm1.IsFile(aIndex: integer; var aFile: string): boolean;
+var
+  b: boolean;
+  s: string;
+begin
+  s:=aFile;
+  b:=FileExists(s);
+  if not b then
+  begin
+    s:=ExtractFileName(s);
+    s:=currdir+_FF+s;
+    b:=FileExists(s);
+    if b then
+    begin
+      (* aktualizacja danych *)
+      if aIndex=0 then zrodlo.FileName:=s;
+      SetFiles(aIndex,s);
+      aFile:=s;
+    end;
+  end;
+  result:=b;
+end;
+
 procedure TForm1.TabRestore(aIndex: integer; aFile: string);
 var
   a: TTabSheet;
   b: TSynEdit;
+  s: string;
 begin
+  s:=aFile;
   if aIndex=0 then
   begin
-    if FileExists(aFile) then SynEdit1.Lines.LoadFromFile(aFile);
+    if IsFile(aIndex,s) then SynEdit1.Lines.LoadFromFile(s);
   end else begin
+    IsFile(aIndex,s);
     a:=TTabSheet.Create(PageControl1);
     list.Add(a);
-    a.Caption:=ExtractFileName(aFile);
+    a.Caption:=ExtractFileName(s);
     a.PageControl:=PageControl1;
     b:=TSynEdit.Create(a);
     list2.Add(b);
@@ -512,7 +539,7 @@ begin
     b.Highlighter:=SynCppSyn1;
     b.Font.Assign(SynEdit1.Font);
     b.OnChange:=@SynEdit1Change;
-    if FileExists(aFile) then b.Lines.LoadFromFile(aFile);
+    if FileExists(s) then b.Lines.LoadFromFile(s);
   end;
 end;
 
