@@ -12,7 +12,7 @@ object Form1: TForm1
   OnDestroy = FormDestroy
   OnKeyDown = FormKeyDown
   OnShow = FormShow
-  SessionProperties = 'dyrektywy.Text;Height;Left;Memo1.Height;Top;Width;WindowState;zrodlo.FileName;cHost.Text;cUser.Text;cPass.Text;cDir.Text'
+  SessionProperties = 'cDir.Text;cHost.Text;cPass.Text;cUser.Text;dyrektywy.Text;Height;Left;Memo1.Height;Top;Width;WindowState;zrodlo.FileName;CheckBox2.Checked;CheckBox3.Checked;CheckBox1.Checked'
   LCLVersion = '2.0.12.0'
   object zrodlo: TFileNameEdit
     AnchorSideLeft.Control = Label2
@@ -43,12 +43,12 @@ object Form1: TForm1
     AnchorSideRight.Control = Owner
     AnchorSideRight.Side = asrBottom
     Left = 0
-    Height = 34
+    Height = 64
     Top = 56
     Width = 928
     Anchors = [akTop, akLeft, akRight]
     BevelOuter = bvNone
-    ClientHeight = 34
+    ClientHeight = 64
     ClientWidth = 928
     TabOrder = 5
     object uELED1: TuELED
@@ -58,7 +58,7 @@ object Form1: TForm1
       AnchorSideTop.Side = asrCenter
       Left = 312
       Height = 41
-      Top = -3
+      Top = 1
       Width = 64
       Debug = False
       Active = False
@@ -71,11 +71,11 @@ object Form1: TForm1
     object BitBtn1: TBitBtn
       AnchorSideLeft.Control = Panel1
       AnchorSideTop.Control = Panel1
-      AnchorSideTop.Side = asrCenter
       Left = 0
       Height = 30
-      Top = 2
+      Top = 6
       Width = 75
+      BorderSpacing.Top = 6
       Caption = 'Load'
       OnClick = BitBtn1Click
       TabOrder = 0
@@ -86,7 +86,7 @@ object Form1: TForm1
       AnchorSideTop.Control = BitBtn1
       Left = 79
       Height = 30
-      Top = 2
+      Top = 6
       Width = 75
       BorderSpacing.Left = 4
       Caption = 'Save'
@@ -99,7 +99,7 @@ object Form1: TForm1
       AnchorSideTop.Control = BitBtn2
       Left = 158
       Height = 30
-      Top = 2
+      Top = 6
       Width = 75
       BorderSpacing.Left = 4
       Caption = 'Compile'
@@ -112,7 +112,7 @@ object Form1: TForm1
       AnchorSideTop.Control = BitBtn3
       Left = 237
       Height = 30
-      Top = 2
+      Top = 6
       Width = 75
       BorderSpacing.Left = 4
       Caption = 'Run'
@@ -126,7 +126,7 @@ object Form1: TForm1
       AnchorSideTop.Side = asrCenter
       Left = 319
       Height = 27
-      Top = 4
+      Top = 8
       Width = 51
       BorderSpacing.Left = 2
       Caption = 'Stop'
@@ -135,13 +135,13 @@ object Form1: TForm1
       TabOrder = 4
     end
     object Label1: TLabel
-      AnchorSideLeft.Control = BitBtn6
+      AnchorSideLeft.Control = CheckBox1
       AnchorSideLeft.Side = asrBottom
-      AnchorSideTop.Control = BitBtn4
+      AnchorSideTop.Control = CheckBox1
       AnchorSideTop.Side = asrCenter
-      Left = 519
+      Left = 648
       Height = 19
-      Top = 8
+      Top = 12
       Width = 72
       BorderSpacing.Left = 4
       Caption = 'Dyrektywy:'
@@ -154,10 +154,10 @@ object Form1: TForm1
       AnchorSideTop.Side = asrCenter
       AnchorSideRight.Control = Panel1
       AnchorSideRight.Side = asrBottom
-      Left = 595
+      Left = 724
       Height = 31
-      Top = 2
-      Width = 329
+      Top = 6
+      Width = 200
       Anchors = [akTop, akLeft, akRight]
       BorderSpacing.Left = 4
       BorderSpacing.Right = 4
@@ -169,11 +169,64 @@ object Form1: TForm1
       AnchorSideTop.Control = BitBtn4
       Left = 376
       Height = 30
-      Top = 2
+      Top = 6
       Width = 139
       Caption = 'Wyślij na serwer'
       OnClick = BitBtn6Click
       TabOrder = 6
+    end
+    object CheckBox1: TCheckBox
+      AnchorSideLeft.Control = BitBtn6
+      AnchorSideLeft.Side = asrBottom
+      AnchorSideTop.Control = BitBtn6
+      AnchorSideTop.Side = asrCenter
+      Left = 517
+      Height = 23
+      Top = 10
+      Width = 127
+      BorderSpacing.Left = 2
+      Caption = 'Wykonaj mimo!'
+      Font.Color = clRed
+      ParentFont = False
+      TabOrder = 7
+    end
+    object CheckBox2: TCheckBox
+      AnchorSideLeft.Control = CheckBox3
+      AnchorSideLeft.Side = asrBottom
+      AnchorSideTop.Control = CheckBox3
+      AnchorSideTop.Side = asrCenter
+      Left = 238
+      Height = 23
+      Top = 38
+      Width = 51
+      BorderSpacing.Left = 4
+      Caption = '-O3'
+      TabOrder = 9
+    end
+    object Label7: TLabel
+      AnchorSideLeft.Control = BitBtn1
+      AnchorSideTop.Control = BitBtn1
+      AnchorSideTop.Side = asrBottom
+      Left = 0
+      Height = 19
+      Top = 40
+      Width = 171
+      BorderSpacing.Top = 4
+      Caption = 'Opcje kompilacji bibliotek:'
+      ParentColor = False
+    end
+    object CheckBox3: TCheckBox
+      AnchorSideLeft.Control = Label7
+      AnchorSideLeft.Side = asrBottom
+      AnchorSideTop.Control = Label7
+      AnchorSideTop.Side = asrCenter
+      Left = 175
+      Height = 23
+      Top = 38
+      Width = 59
+      BorderSpacing.Left = 4
+      Caption = '-fPIC'
+      TabOrder = 8
     end
   end
   object Memo1: TMemo
@@ -205,8 +258,8 @@ object Form1: TForm1
     AnchorSideRight.Side = asrBottom
     AnchorSideBottom.Control = Splitter1
     Left = 0
-    Height = 486
-    Top = 90
+    Height = 456
+    Top = 120
     Width = 928
     ActivePage = TabSheet1
     Anchors = [akTop, akLeft, akRight, akBottom]
@@ -218,11 +271,11 @@ object Form1: TForm1
     OnChanging = PageControl1Changing
     object TabSheet1: TTabSheet
       Caption = 'Main'
-      ClientHeight = 482
+      ClientHeight = 452
       ClientWidth = 869
       inline SynEdit1: TSynEdit
         Left = 0
-        Height = 456
+        Height = 426
         Top = 26
         Width = 869
         Align = alClient
@@ -1008,5 +1061,22 @@ object Form1: TForm1
     OnReadData = Process1ReadData
     Left = 496
     Top = 115
+  end
+  object Process3: TAsyncProcess
+    Active = False
+    Options = [poUsePipes, poStderrToOutPut]
+    Priority = ppNormal
+    StartupOptions = []
+    ShowWindow = swoNone
+    WindowColumns = 0
+    WindowHeight = 0
+    WindowLeft = 0
+    WindowRows = 0
+    WindowTop = 0
+    WindowWidth = 0
+    FillAttribute = 0
+    OnReadData = Process1ReadData
+    Left = 312
+    Top = 272
   end
 end

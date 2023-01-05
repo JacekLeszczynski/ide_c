@@ -14,6 +14,9 @@ type
   { TForm1 }
 
   TForm1 = class(TForm)
+    CheckBox1: TCheckBox;
+    CheckBox2: TCheckBox;
+    CheckBox3: TCheckBox;
     cHost: TEdit;
     cUser: TEdit;
     cPass: TEdit;
@@ -24,6 +27,7 @@ type
     Label4: TLabel;
     Label5: TLabel;
     Label6: TLabel;
+    Label7: TLabel;
     Panel2: TPanel;
     ppSendSer: TAsyncProcess;
     BitBtn6: TBitBtn;
@@ -46,6 +50,7 @@ type
     PageControl1: TPageControl;
     PopupMenu1: TPopupMenu;
     Process1: TAsyncProcess;
+    Process3: TAsyncProcess;
     propstorage: TXMLPropStorage;
     SaveDialog1: TSaveDialog;
     Splitter1: TSplitter;
@@ -82,6 +87,7 @@ type
     procedure Timer1StopTimer(Sender: TObject);
     procedure Timer1Timer(Sender: TObject);
   private
+    s_pliki: string;
     last_searching_text: string;
     currdir: string;
     files: TStringList;
@@ -91,11 +97,14 @@ type
     procedure Memo1Run;
     procedure SetFiles(aIndex: integer; aFilename: string);
     function SaveFiles: boolean;
-    procedure TabRestore(aFile: string);
+    procedure TabRestore(aIndex: integer; aFile: string);
     procedure wyszukaj(aStr: string = ''; aWstecz: boolean = false);
     procedure sfocus;
     function GetPlikWynikowy(aDyrektywy,aDefault: string): string;
+    procedure NiezapisanePliki;
     function compile: string;
+    procedure compile_libraries;
+    procedure compile_lib(aFile,aLib: string);
   public
 
   end;
@@ -125,6 +134,7 @@ end;
 
 procedure TForm1.BitBtn3Click(Sender: TObject);
 begin
+  NiezapisanePliki;
   compile;
 end;
 
@@ -132,6 +142,7 @@ procedure TForm1.BitBtn4Click(Sender: TObject);
 var
   pom,s: string;
 begin
+  NiezapisanePliki;
   if SaveFiles then
   begin
     s:=compile;
@@ -351,6 +362,7 @@ procedure TForm1.Process1ReadData(Sender: TObject);
 var
   ss: TStringList;
 begin
+  if (TAsyncProcess(Sender).Name='Process1') and CheckBox1.Checked then exit;
   ss:=TStringList.Create;
   try
     ss.LoadFromStream(TAsyncProcess(Sender).Output);
@@ -366,34 +378,26 @@ var
   s: TStringList;
   i: integer;
 begin
+  (* init *)
+  currdir:=GetCurrentDir;
+  (* pliki kolejne *)
   propstorage.ReadStrings('def_files',files);
   if files.Count=0 then
   begin
     SynEdit1.Clear;
     exit;
   end;
-  if zrodlo.FileName<>'' then
-  begin
-    currdir:=ExtractFilePath(zrodlo.FileName);
-    SetFiles(0,zrodlo.FileName);
-    SynEdit1.Lines.LoadFromFile(zrodlo.FileName);
-  end;
-  for i:=1 to files.Count-1 do TabRestore(files[i]);
+  (* odtworzenie zakładek i wczytanie plików do nich *)
+  for i:=0 to files.Count-1 do TabRestore(i,files[i]);
+  (* odtworzenie środowiska pracy *)
   s:=TStringList.Create;
   propstorage.ReadStrings('def_tabs',s);
   try
     for i:=0 to PageControl1.PageCount-1 do
     begin
-      if i=0 then
-      begin
-        //SynEdit1.CaretX:=StrToInt(GetLineToStr(s[i],1,','));
-        SynEdit1.CaretY:=StrToInt(GetLineToStr(s[i],2,','));
-      end else begin
-        //TSynEdit(list2[i-1]).CaretX:=StrToInt(GetLineToStr(s[i],1,','));
-        TSynEdit(list2[i-1]).CaretY:=StrToInt(GetLineToStr(s[i],2,','));
-      end;
+      if i=0 then SynEdit1.CaretY:=StrToInt(GetLineToStr(s[i],2,',')) else
+      TSynEdit(list2[i-1]).CaretY:=StrToInt(GetLineToStr(s[i],2,','));
     end;
-    propstorage.WriteStrings('def_tabs',s);
   finally
     s.Free;
   end;
@@ -488,31 +492,28 @@ begin
   end;
 end;
 
-procedure TForm1.TabRestore(aFile: string);
+procedure TForm1.TabRestore(aIndex: integer; aFile: string);
 var
   a: TTabSheet;
   b: TSynEdit;
-  //c: TPanel;
 begin
-  a:=TTabSheet.Create(PageControl1);
-  list.Add(a);
-  a.Caption:=ExtractFileName(aFile);
-  a.PageControl:=PageControl1;
-  b:=TSynEdit.Create(a);
-  list2.Add(b);
-  b.Parent:=a;
-  b.Align:=alClient;
-  b.Highlighter:=SynCppSyn1;
-  b.Font.Assign(SynEdit1.Font);
-  b.OnChange:=@SynEdit1Change;
-  //c:=TPanel.Create(a);
-  //list3.Add(c);
-  //c.Parent:=a;
-  //c.Align:=alTop;
-  //c.BevelInner:=bvRaised;
-  //c.BevelOuter:=bvLowered;
-  //c.Height:=26;
-  if FileExists(aFile) then b.Lines.LoadFromFile(aFile);
+  if aIndex=0 then
+  begin
+    if FileExists(aFile) then SynEdit1.Lines.LoadFromFile(aFile);
+  end else begin
+    a:=TTabSheet.Create(PageControl1);
+    list.Add(a);
+    a.Caption:=ExtractFileName(aFile);
+    a.PageControl:=PageControl1;
+    b:=TSynEdit.Create(a);
+    list2.Add(b);
+    b.Parent:=a;
+    b.Align:=alClient;
+    b.Highlighter:=SynCppSyn1;
+    b.Font.Assign(SynEdit1.Font);
+    b.OnChange:=@SynEdit1Change;
+    if FileExists(aFile) then b.Lines.LoadFromFile(aFile);
+  end;
 end;
 
 procedure TForm1.wyszukaj(aStr: string; aWstecz: boolean);
@@ -547,6 +548,15 @@ begin
   end;
 end;
 
+procedure TForm1.NiezapisanePliki;
+var
+  i: integer;
+begin
+  s_pliki:=',';
+  for i:=0 to list2.Count-1 do if TSynEdit(list2[i]).Tag=1 then s_pliki:=s_pliki+IntToStr(i)+',';
+  if s_pliki=',' then s_pliki:='';
+end;
+
 function TForm1.compile: string;
 var
   i: integer;
@@ -579,12 +589,72 @@ begin
     process1.Parameters.Add('-o');
     process1.Parameters.Add(pom);
   end;
+  Memo1.Lines.Add('*** Kompilacja programu głównego ***');
   process1.Execute;
   while process1.Active do application.ProcessMessages;
   process1.Terminate(0);
+  compile_libraries;
   Memo1.Lines.Add('Wszystko.');
   sfocus;
   result:=res;
+end;
+
+procedure TForm1.compile_libraries;
+var
+  i: integer;
+  s,s1,s2: string;
+  fsource,fnazwa: string;
+begin
+  Memo1.Lines.Add('*** Kompilacja Bibliotek ***');
+  //for i:=0 to list2.Count-1 do if TSynEdit(list2[i]).Tag=1 then
+  for i:=0 to list2.Count-1 do
+  begin
+    s:=trim(TSynEdit(list2[i]).Lines[0]);
+    if pos('/* BIBLIOTEKA:',s)>0 then
+    begin
+      s:=StringReplace(s,'/*','',[]);
+      s:=StringReplace(s,'*/','',[]);
+      s:=trim(s);
+      s1:=trim(GetLineToStr(s,1,':'));
+      s2:=trim(GetLineToStr(s,2,':'));
+      fnazwa:=s2+'.so';
+      if (s1='BIBLIOTEKA') and ((pos(','+IntToStr(i)+',',s_pliki)>0) or (not FileExists(fnazwa))) then
+      begin
+        fsource:=files[i+1];
+        Memo1.Lines.Add(' - '+fsource+' => '+fnazwa);
+        compile_lib(fsource,fnazwa);
+      end;
+    end;
+  end;
+end;
+
+{
+  Przykłady kompilacji:
+  #gcc -O3 -shared -o libtest.so test.c
+  #gcc -O3 -shared -o libtest.so -fPIC test.c
+  #gcc -O3 -shared -o libtest.so -Wall test.c
+}
+procedure TForm1.compile_lib(aFile, aLib: string);
+begin
+  process3.Executable:='gcc';
+  process3.CurrentDirectory:=ExtractFilePath(aFile);
+  process3.Parameters.Clear;
+  if CheckBox3.Checked then process3.Parameters.Add('-fPIC');
+  process3.Parameters.Add('-shared');
+  if CheckBox2.Checked then
+  begin
+    process3.Parameters.Add('-O3');
+    process3.Parameters.Add('-Ofast');
+  end;
+  if aLib<>'' then
+  begin
+    process3.Parameters.Add('-o');
+    process3.Parameters.Add(aLib);
+  end;
+  process3.Parameters.Add(ExtractFileName(aFile));
+  process3.Execute;
+  while process3.Active do application.ProcessMessages;
+  process3.Terminate(0);
 end;
 
 end.
