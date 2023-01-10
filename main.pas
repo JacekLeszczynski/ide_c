@@ -15,8 +15,9 @@ type
 
   TForm1 = class(TForm)
     CheckBox1: TCheckBox;
-    CheckBox2: TCheckBox;
-    CheckBox3: TCheckBox;
+    cbFast: TCheckBox;
+    cbPIC: TCheckBox;
+    CheckBox4: TCheckBox;
     cHost: TEdit;
     cUser: TEdit;
     cPass: TEdit;
@@ -52,6 +53,11 @@ type
     Process1: TAsyncProcess;
     Process3: TAsyncProcess;
     propstorage: TXMLPropStorage;
+    rb1: TRadioButton;
+    rb2: TRadioButton;
+    rb3: TRadioButton;
+    rb4: TRadioButton;
+    rb0: TRadioButton;
     SaveDialog1: TSaveDialog;
     Splitter1: TSplitter;
     SynEdit1: TSynEdit;
@@ -116,9 +122,99 @@ var
 implementation
 
 uses
-  ecode, lcltype, synedittypes;
+  lcltype, synedittypes, fileutil, DCPdes, DCPsha1;
 
 {$R *.lfm}
+
+var
+  textseparator: char = '"';
+
+function GetLineToStr(const S: string; N: Integer; const Delims: Char; const wynik: string = ''): string;
+var
+  cc: boolean = false;
+  w,i,l,len: SizeInt;
+begin
+  w:=0;
+  i:=1;
+  l:=0;
+  len:=Length(S);
+  SetLength(Result, 0);
+  while (i<=len) and (w<>N) do
+  begin
+    if s[i] = TextSeparator then cc:=not cc;
+    if (s[i] = Delims) and (not cc) then inc(w) else
+    begin
+      if (N-1)=w then
+      begin
+        inc(l);
+        SetLength(Result,l);
+        Result[L]:=S[i];
+      end;
+    end;
+    inc(i);
+  end;
+  if result='' then result:=wynik;
+end;
+
+function GetLineCount(aStr: string; separator: char): integer;
+var
+  element_count: integer = 1;
+  in_quotes: boolean = false;
+  i: integer;
+begin
+  for i:=1 to length(aStr) do
+  begin
+    if aStr[i]=textseparator then in_quotes:=not in_quotes;
+    if not in_quotes and (aStr[i]=separator) then inc(element_count);
+  end;
+  if aStr='' then Result:=0 else Result:=element_count;
+end;
+
+function CreateString(c:char;l:integer):string;
+var
+  s: string;
+  i: integer;
+begin
+  s:='';
+  for i:=1 to l do s:=s+c;
+  result:=s;
+end;
+
+function EncryptString(s,token: string;force_length:integer=0): string;
+var
+  Des3: TDCP_3des;
+  ss,pom: string;
+  a: integer;
+begin
+  ss:=s;
+  a:=length(ss);
+  if (force_length>0) and (a<force_length) then ss:=ss+CreateString(' ',force_length-a);
+  Des3:=TDCP_3des.Create(nil);
+  try
+    Des3.InitStr(token,TDCP_sha1);
+    pom:=Des3.EncryptString(ss);
+    Des3.Burn;
+  finally
+    Des3.Free;
+  end;
+  result:=pom;
+end;
+
+function DecryptString(s,token: string; trim_spaces: boolean = false): string;
+var
+  Des3: TDCP_3des;
+  pom: string;
+begin
+  Des3:=TDCP_3des.Create(nil);
+  try
+    Des3.InitStr(token,TDCP_sha1);
+    pom:=Des3.DecryptString(s);
+    Des3.Burn;
+  finally
+    Des3.Free;
+  end;
+  if trim_spaces then result:=trim(pom) else result:=pom;
+end;
 
 { TForm1 }
 
@@ -211,12 +307,12 @@ end;
 procedure TForm1.cPassChange(Sender: TObject);
 begin
   if Edit1.Focused then exit;
-  Edit1.Text:=ecode.DecryptString(cPass.Text,'tyreywufdfy736473rg',true);
+  Edit1.Text:=DecryptString(cPass.Text,'tyreywufdfy736473rg',true);
 end;
 
 procedure TForm1.Edit1Change(Sender: TObject);
 begin
-  cPass.Text:=ecode.EncryptString(Edit1.Text,'tyreywufdfy736473rg',50);
+  cPass.Text:=EncryptString(Edit1.Text,'tyreywufdfy736473rg',50);
 end;
 
 procedure TForm1.FormClose(Sender: TObject; var CloseAction: TCloseAction);
@@ -503,7 +599,7 @@ begin
   if not b then
   begin
     s:=ExtractFileName(s);
-    s:=currdir+_FF+s;
+    s:=currdir+'/'+s;
     b:=FileExists(s);
     if b then
     begin
@@ -655,6 +751,22 @@ begin
   end;
 end;
 
+function wewnCopyFile(src,dest: string): boolean;
+var
+  p: TProcess;
+begin
+  p:=TProcess.Create(nil);
+  try
+    p.Options:=[poWaitOnExit];
+    p.CommandLine:='cp -f "'+src+'" "'+dest+'"';
+    p.Execute;
+  finally
+    p.Terminate(0);
+    p.Free;
+  end;
+  result:=p.ExitStatus=0;
+end;
+
 {
   Przykłady kompilacji:
   #gcc -O3 -shared -o libtest.so test.c
@@ -662,16 +774,24 @@ end;
   #gcc -O3 -shared -o libtest.so -Wall test.c
 }
 procedure TForm1.compile_lib(aFile, aLib: string);
+var
+  pom: string;
+  es: integer;
+  b: boolean;
 begin
+  pom:=ExtractFilePath(aFile);
   process3.Executable:='gcc';
-  process3.CurrentDirectory:=ExtractFilePath(aFile);
+  process3.CurrentDirectory:=pom;
   process3.Parameters.Clear;
-  if CheckBox3.Checked then process3.Parameters.Add('-fPIC');
+  if cbPIC.Checked then process3.Parameters.Add('-fPIC');
   process3.Parameters.Add('-shared');
-  if CheckBox2.Checked then
+  if not rb0.Checked then
   begin
-    process3.Parameters.Add('-O3');
-    process3.Parameters.Add('-Ofast');
+    if rb1.Checked then process3.Parameters.Add('-O1');
+    if rb2.Checked then process3.Parameters.Add('-O2');
+    if rb3.Checked then process3.Parameters.Add('-O3');
+    if rb4.Checked then process3.Parameters.Add('-O4');
+    if cbFast.Checked then process3.Parameters.Add('-Ofast');
   end;
   if aLib<>'' then
   begin
@@ -681,7 +801,14 @@ begin
   process3.Parameters.Add(ExtractFileName(aFile));
   process3.Execute;
   while process3.Active do application.ProcessMessages;
+  es:=process3.ExitStatus;
   process3.Terminate(0);
+  if (es=0) and CheckBox4.Checked then
+  begin
+    b:=CopyFile(pom+aLib,'/usr/lib/'+aLib);
+    if b then Memo1.Lines.Add(' - biblioteka "'+aLib+'" => skopiowana prawidłowo do katalogu LIB.') else
+    Memo1.Lines.Add(' - biblioteka "'+aLib+'" => NIE skopiowana prawidłowo do katalogu LIB!');
+  end;
 end;
 
 end.

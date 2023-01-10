@@ -12,7 +12,7 @@ object Form1: TForm1
   OnDestroy = FormDestroy
   OnKeyDown = FormKeyDown
   OnShow = FormShow
-  SessionProperties = 'cDir.Text;cHost.Text;cPass.Text;cUser.Text;dyrektywy.Text;Height;Left;Memo1.Height;Top;Width;WindowState;zrodlo.FileName;CheckBox2.Checked;CheckBox3.Checked;CheckBox1.Checked'
+  SessionProperties = 'cDir.Text;CheckBox1.Checked;CheckBox4.Checked;cHost.Text;cPass.Text;cUser.Text;dyrektywy.Text;Height;Left;Memo1.Height;Top;Width;WindowState;zrodlo.FileName;cbPIC.Checked;cbFast.Checked;rb0.Checked;rb1.Checked;rb2.Checked;rb3.Checked;rb4.Checked'
   LCLVersion = '2.0.12.0'
   object zrodlo: TFileNameEdit
     AnchorSideLeft.Control = Label2
@@ -190,19 +190,6 @@ object Form1: TForm1
       ParentFont = False
       TabOrder = 7
     end
-    object CheckBox2: TCheckBox
-      AnchorSideLeft.Control = CheckBox3
-      AnchorSideLeft.Side = asrBottom
-      AnchorSideTop.Control = CheckBox3
-      AnchorSideTop.Side = asrCenter
-      Left = 238
-      Height = 23
-      Top = 38
-      Width = 51
-      BorderSpacing.Left = 4
-      Caption = '-O3'
-      TabOrder = 9
-    end
     object Label7: TLabel
       AnchorSideLeft.Control = BitBtn1
       AnchorSideTop.Control = BitBtn1
@@ -215,7 +202,7 @@ object Form1: TForm1
       Caption = 'Opcje kompilacji bibliotek:'
       ParentColor = False
     end
-    object CheckBox3: TCheckBox
+    object cbPIC: TCheckBox
       AnchorSideLeft.Control = Label7
       AnchorSideLeft.Side = asrBottom
       AnchorSideTop.Control = Label7
@@ -227,6 +214,96 @@ object Form1: TForm1
       BorderSpacing.Left = 4
       Caption = '-fPIC'
       TabOrder = 8
+    end
+    object CheckBox4: TCheckBox
+      AnchorSideLeft.Control = cbFast
+      AnchorSideLeft.Side = asrBottom
+      AnchorSideTop.Control = cbFast
+      AnchorSideTop.Side = asrCenter
+      Left = 585
+      Height = 23
+      Top = 38
+      Width = 377
+      BorderSpacing.Left = 4
+      Caption = 'Uaktualniaj automatycznie pliki bibliotek po kompilacji'
+      Font.Color = clRed
+      ParentFont = False
+      TabOrder = 15
+    end
+    object rb1: TRadioButton
+      AnchorSideLeft.Control = rb0
+      AnchorSideLeft.Side = asrBottom
+      AnchorSideTop.Control = cbPIC
+      Left = 294
+      Height = 23
+      Top = 38
+      Width = 49
+      BorderSpacing.Left = 4
+      Caption = '-O1'
+      TabOrder = 10
+    end
+    object rb2: TRadioButton
+      AnchorSideLeft.Control = rb1
+      AnchorSideLeft.Side = asrBottom
+      AnchorSideTop.Control = cbPIC
+      Left = 347
+      Height = 23
+      Top = 38
+      Width = 51
+      BorderSpacing.Left = 4
+      Caption = '-O2'
+      TabOrder = 11
+    end
+    object rb3: TRadioButton
+      AnchorSideLeft.Control = rb2
+      AnchorSideLeft.Side = asrBottom
+      AnchorSideTop.Control = cbPIC
+      Left = 402
+      Height = 23
+      Top = 38
+      Width = 51
+      BorderSpacing.Left = 4
+      Caption = '-O3'
+      TabOrder = 12
+    end
+    object rb4: TRadioButton
+      AnchorSideLeft.Control = rb3
+      AnchorSideLeft.Side = asrBottom
+      AnchorSideTop.Control = cbPIC
+      Left = 457
+      Height = 23
+      Top = 38
+      Width = 52
+      BorderSpacing.Left = 4
+      Caption = '-O4'
+      TabOrder = 13
+    end
+    object cbFast: TCheckBox
+      AnchorSideLeft.Control = rb4
+      AnchorSideLeft.Side = asrBottom
+      AnchorSideTop.Control = cbPIC
+      AnchorSideTop.Side = asrCenter
+      Left = 513
+      Height = 23
+      Top = 38
+      Width = 68
+      BorderSpacing.Left = 4
+      Caption = '-Ofast'
+      TabOrder = 14
+    end
+    object rb0: TRadioButton
+      AnchorSideLeft.Control = cbPIC
+      AnchorSideLeft.Side = asrBottom
+      AnchorSideTop.Control = cbPIC
+      Left = 238
+      Height = 23
+      Top = 38
+      Width = 52
+      BorderSpacing.Left = 4
+      Caption = '-O0'
+      Checked = True
+      TabOrder = 9
+      TabStop = True
     end
   end
   object Memo1: TMemo
