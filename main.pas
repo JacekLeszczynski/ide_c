@@ -7,7 +7,7 @@ interface
 uses
   Classes, SysUtils, process, Forms, Controls, Graphics, Dialogs, EditBtn,
   ExtCtrls, Buttons, XMLPropStorage, StdCtrls, AsyncProcess, ComCtrls, Menus,
-  ExtMessage, SynEdit, SynHighlighterCpp, ueled;
+  ueled, SynEdit, SynHighlighterCpp;
 
 type
 
@@ -23,6 +23,8 @@ type
     cPass: TEdit;
     cDir: TEdit;
     Edit1: TEdit;
+    spassword: TEdit;
+    Label8: TLabel;
     Label2: TLabel;
     Label3: TLabel;
     Label4: TLabel;
@@ -46,7 +48,6 @@ type
     MenuItem3: TMenuItem;
     MenuItem4: TMenuItem;
     MenuItem5: TMenuItem;
-    mess: TExtMessage;
     Memo1: TMemo;
     PageControl1: TPageControl;
     PopupMenu1: TPopupMenu;
@@ -111,7 +112,7 @@ type
     procedure NiezapisanePliki;
     function compile: string;
     procedure compile_libraries;
-    procedure compile_lib(aFile,aLib: string);
+    procedure compile_lib(aFile,aLib,aDyrektywy: string);
   public
 
   end;
@@ -129,7 +130,7 @@ uses
 var
   textseparator: char = '"';
 
-function GetLineToStr(const S: string; N: Integer; const Delims: Char; const wynik: string = ''): string;
+function wGetLineToStr(const S: string; N: Integer; const Delims: Char; const wynik: string = ''): string;
 var
   cc: boolean = false;
   w,i,l,len: SizeInt;
@@ -156,7 +157,7 @@ begin
   if result='' then result:=wynik;
 end;
 
-function GetLineCount(aStr: string; separator: char): integer;
+function wGetLineCount(aStr: string; separator: char): integer;
 var
   element_count: integer = 1;
   in_quotes: boolean = false;
@@ -170,7 +171,7 @@ begin
   if aStr='' then Result:=0 else Result:=element_count;
 end;
 
-function CreateString(c:char;l:integer):string;
+function wCreateString(c:char;l:integer):string;
 var
   s: string;
   i: integer;
@@ -180,7 +181,7 @@ begin
   result:=s;
 end;
 
-function EncryptString(s,token: string;force_length:integer=0): string;
+function wEncryptString(s,token: string;force_length:integer=0): string;
 var
   Des3: TDCP_3des;
   ss,pom: string;
@@ -188,7 +189,7 @@ var
 begin
   ss:=s;
   a:=length(ss);
-  if (force_length>0) and (a<force_length) then ss:=ss+CreateString(' ',force_length-a);
+  if (force_length>0) and (a<force_length) then ss:=ss+wCreateString(' ',force_length-a);
   Des3:=TDCP_3des.Create(nil);
   try
     Des3.InitStr(token,TDCP_sha1);
@@ -200,7 +201,7 @@ begin
   result:=pom;
 end;
 
-function DecryptString(s,token: string; trim_spaces: boolean = false): string;
+function wDecryptString(s,token: string; trim_spaces: boolean = false): string;
 var
   Des3: TDCP_3des;
   pom: string;
@@ -307,12 +308,12 @@ end;
 procedure TForm1.cPassChange(Sender: TObject);
 begin
   if Edit1.Focused then exit;
-  Edit1.Text:=DecryptString(cPass.Text,'tyreywufdfy736473rg',true);
+  Edit1.Text:=wDecryptString(cPass.Text,'tyreywufdfy736473rg',true);
 end;
 
 procedure TForm1.Edit1Change(Sender: TObject);
 begin
-  cPass.Text:=EncryptString(Edit1.Text,'tyreywufdfy736473rg',50);
+  cPass.Text:=wEncryptString(Edit1.Text,'tyreywufdfy736473rg',50);
 end;
 
 procedure TForm1.FormClose(Sender: TObject; var CloseAction: TCloseAction);
@@ -492,8 +493,8 @@ begin
   try
     for i:=0 to PageControl1.PageCount-1 do
     begin
-      if i=0 then SynEdit1.CaretY:=StrToInt(GetLineToStr(s[i],2,',')) else
-      TSynEdit(list2[i-1]).CaretY:=StrToInt(GetLineToStr(s[i],2,','));
+      if i=0 then SynEdit1.CaretY:=StrToInt(wGetLineToStr(s[i],2,',')) else
+      TSynEdit(list2[i-1]).CaretY:=StrToInt(wGetLineToStr(s[i],2,','));
     end;
   finally
     s.Free;
@@ -667,7 +668,7 @@ begin
   begin
     delete(s,1,a+1);
     s:=trim(s);
-    result:=GetLineToStr(s,1,' ');
+    result:=wGetLineToStr(s,1,' ');
   end;
 end;
 
@@ -697,7 +698,7 @@ begin
   i:=1;
   while true do
   begin
-    s:=GetLineToStr(dyrektywy.Text,i,' ');
+    s:=wGetLineToStr(dyrektywy.Text,i,' ');
     if b then b:=pos('-o',s)=0;
     if s='' then break;
     process1.Parameters.Add(s);
@@ -724,12 +725,11 @@ end;
 
 procedure TForm1.compile_libraries;
 var
-  i: integer;
-  s,s1,s2: string;
-  fsource,fnazwa: string;
+  i,j: integer;
+  s,s1,s2,s3: string;
+  fsource,fnazwa,x: string;
 begin
   Memo1.Lines.Add('*** Kompilacja Bibliotek ***');
-  //for i:=0 to list2.Count-1 do if TSynEdit(list2[i]).Tag=1 then
   for i:=0 to list2.Count-1 do
   begin
     s:=trim(TSynEdit(list2[i]).Lines[0]);
@@ -738,27 +738,33 @@ begin
       s:=StringReplace(s,'/*','',[]);
       s:=StringReplace(s,'*/','',[]);
       s:=trim(s);
-      s1:=trim(GetLineToStr(s,1,':'));
-      s2:=trim(GetLineToStr(s,2,':'));
-      fnazwa:=s2+'.so';
+      s1:=trim(wGetLineToStr(s,1,':'));
+      s2:=trim(wGetLineToStr(s,2,':'));
+      s3:=trim(wGetLineToStr(s2,1,' '));
+      fnazwa:=s3+'.so';
       if (s1='BIBLIOTEKA') and ((pos(','+IntToStr(i)+',',s_pliki)>0) or (not FileExists(fnazwa))) then
       begin
+        x:='';
+        for j:=2 to wGetLineCount(s2,' ') do x:=x+' '+wGetLineToStr(s2,j,' ');
+        x:=trim(x);
         fsource:=files[i+1];
         Memo1.Lines.Add(' - '+fsource+' => '+fnazwa);
-        compile_lib(fsource,fnazwa);
+        compile_lib(fsource,fnazwa,x);
       end;
     end;
   end;
 end;
 
-function wewnCopyFile(src,dest: string): boolean;
+function wewnCopyFile(src,dest,passwd: string): boolean;
 var
   p: TProcess;
 begin
   p:=TProcess.Create(nil);
   try
     p.Options:=[poWaitOnExit];
-    p.CommandLine:='cp -f "'+src+'" "'+dest+'"';
+    p.Executable:='/bin/sh';
+    p.Parameters.Add('-c');
+    p.Parameters.Add('echo '+passwd+' | sudo -S cp -f "'+src+'" "'+dest+'"');
     p.Execute;
   finally
     p.Terminate(0);
@@ -773,11 +779,12 @@ end;
   #gcc -O3 -shared -o libtest.so -fPIC test.c
   #gcc -O3 -shared -o libtest.so -Wall test.c
 }
-procedure TForm1.compile_lib(aFile, aLib: string);
+procedure TForm1.compile_lib(aFile, aLib, aDyrektywy: string);
 var
-  pom: string;
+  pom,s: string;
   es: integer;
   b: boolean;
+  i: integer;
 begin
   pom:=ExtractFilePath(aFile);
   process3.Executable:='gcc';
@@ -793,6 +800,11 @@ begin
     if rb4.Checked then process3.Parameters.Add('-O4');
     if cbFast.Checked then process3.Parameters.Add('-Ofast');
   end;
+  for i:=1 to wGetLineCount(aDyrektywy,' ') do
+  begin
+    s:=wGetLineToStr(aDyrektywy,i,' ');
+    process3.Parameters.Add(s);
+  end;
   if aLib<>'' then
   begin
     process3.Parameters.Add('-o');
@@ -805,7 +817,8 @@ begin
   process3.Terminate(0);
   if (es=0) and CheckBox4.Checked then
   begin
-    b:=CopyFile(pom+aLib,'/usr/lib/'+aLib);
+    s:=trim(spassword.Text);
+    if s='' then b:=CopyFile(pom+aLib,'/usr/lib/'+aLib) else b:=wewnCopyFile(pom+aLib,'/usr/lib/'+aLib,s);
     if b then Memo1.Lines.Add(' - biblioteka "'+aLib+'" => skopiowana prawidłowo do katalogu LIB.') else
     Memo1.Lines.Add(' - biblioteka "'+aLib+'" => NIE skopiowana prawidłowo do katalogu LIB!');
   end;

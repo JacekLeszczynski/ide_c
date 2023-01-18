@@ -50,7 +50,6 @@
               <DebugInfoType Value="dsDwarf2Set"/>
               <UseHeaptrc Value="True"/>
               <TrashVariables Value="True"/>
-              <UseExternalDbgSyms Value="True"/>
             </Debugging>
             <Options>
               <Win32>
@@ -95,6 +94,9 @@
           </Linking>
           <Other>
             <CustomOptions Value="-dAPP"/>
+            <OtherDefines Count="1">
+              <Define0 Value="APP"/>
+            </OtherDefines>
           </Other>
         </CompilerOptions>
       </Item3>
@@ -179,28 +181,25 @@
       <FormatVersion Value="2"/>
       <Modes Count="0"/>
     </RunParams>
-    <RequiredPackages Count="7">
+    <RequiredPackages Count="6">
       <Item1>
-        <PackageName Value="LazUtils"/>
+        <PackageName Value="dcpcrypt"/>
       </Item1>
       <Item2>
-        <PackageName Value="ExtLazarus"/>
+        <PackageName Value="uEControls"/>
       </Item2>
       <Item3>
-        <PackageName Value="uEControls"/>
+        <PackageName Value="LazUtils"/>
       </Item3>
       <Item4>
-        <PackageName Value="lnetvisual"/>
+        <PackageName Value="FCL"/>
       </Item4>
       <Item5>
-        <PackageName Value="FCL"/>
+        <PackageName Value="SynEdit"/>
       </Item5>
       <Item6>
-        <PackageName Value="SynEdit"/>
-      </Item6>
-      <Item7>
         <PackageName Value="LCL"/>
-      </Item7>
+      </Item6>
     </RequiredPackages>
     <Units Count="2">
       <Unit0>

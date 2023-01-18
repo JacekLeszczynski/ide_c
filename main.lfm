@@ -1,11 +1,11 @@
 object Form1: TForm1
-  Left = 2309
+  Left = 2234
   Height = 671
-  Top = 164
-  Width = 928
+  Top = 163
+  Width = 1374
   Caption = 'Laz IDE Ansi C'
   ClientHeight = 671
-  ClientWidth = 928
+  ClientWidth = 1374
   KeyPreview = True
   OnClose = FormClose
   OnCreate = FormCreate
@@ -23,7 +23,7 @@ object Form1: TForm1
     Left = 80
     Height = 27
     Top = 0
-    Width = 848
+    Width = 1294
     FilterIndex = 0
     HideDirectories = False
     ButtonWidth = 23
@@ -43,13 +43,13 @@ object Form1: TForm1
     AnchorSideRight.Control = Owner
     AnchorSideRight.Side = asrBottom
     Left = 0
-    Height = 64
+    Height = 68
     Top = 56
-    Width = 928
+    Width = 1374
     Anchors = [akTop, akLeft, akRight]
     BevelOuter = bvNone
-    ClientHeight = 64
-    ClientWidth = 928
+    ClientHeight = 68
+    ClientWidth = 1374
     TabOrder = 5
     object uELED1: TuELED
       AnchorSideLeft.Control = BitBtn4
@@ -58,7 +58,7 @@ object Form1: TForm1
       AnchorSideTop.Side = asrCenter
       Left = 312
       Height = 41
-      Top = 1
+      Top = -3
       Width = 64
       Debug = False
       Active = False
@@ -73,9 +73,9 @@ object Form1: TForm1
       AnchorSideTop.Control = Panel1
       Left = 0
       Height = 30
-      Top = 6
+      Top = 2
       Width = 75
-      BorderSpacing.Top = 6
+      BorderSpacing.Top = 2
       Caption = 'Load'
       OnClick = BitBtn1Click
       TabOrder = 0
@@ -86,7 +86,7 @@ object Form1: TForm1
       AnchorSideTop.Control = BitBtn1
       Left = 79
       Height = 30
-      Top = 6
+      Top = 2
       Width = 75
       BorderSpacing.Left = 4
       Caption = 'Save'
@@ -99,7 +99,7 @@ object Form1: TForm1
       AnchorSideTop.Control = BitBtn2
       Left = 158
       Height = 30
-      Top = 6
+      Top = 2
       Width = 75
       BorderSpacing.Left = 4
       Caption = 'Compile'
@@ -112,7 +112,7 @@ object Form1: TForm1
       AnchorSideTop.Control = BitBtn3
       Left = 237
       Height = 30
-      Top = 6
+      Top = 2
       Width = 75
       BorderSpacing.Left = 4
       Caption = 'Run'
@@ -126,7 +126,7 @@ object Form1: TForm1
       AnchorSideTop.Side = asrCenter
       Left = 319
       Height = 27
-      Top = 8
+      Top = 4
       Width = 51
       BorderSpacing.Left = 2
       Caption = 'Stop'
@@ -141,7 +141,7 @@ object Form1: TForm1
       AnchorSideTop.Side = asrCenter
       Left = 648
       Height = 19
-      Top = 12
+      Top = 8
       Width = 72
       BorderSpacing.Left = 4
       Caption = 'Dyrektywy:'
@@ -156,8 +156,8 @@ object Form1: TForm1
       AnchorSideRight.Side = asrBottom
       Left = 724
       Height = 31
-      Top = 6
-      Width = 200
+      Top = 2
+      Width = 646
       Anchors = [akTop, akLeft, akRight]
       BorderSpacing.Left = 4
       BorderSpacing.Right = 4
@@ -169,7 +169,7 @@ object Form1: TForm1
       AnchorSideTop.Control = BitBtn4
       Left = 376
       Height = 30
-      Top = 6
+      Top = 2
       Width = 139
       Caption = 'Wyślij na serwer'
       OnClick = BitBtn6Click
@@ -182,7 +182,7 @@ object Form1: TForm1
       AnchorSideTop.Side = asrCenter
       Left = 517
       Height = 23
-      Top = 10
+      Top = 6
       Width = 127
       BorderSpacing.Left = 2
       Caption = 'Wykonaj mimo!'
@@ -196,9 +196,9 @@ object Form1: TForm1
       AnchorSideTop.Side = asrBottom
       Left = 0
       Height = 19
-      Top = 40
+      Top = 41
       Width = 171
-      BorderSpacing.Top = 4
+      BorderSpacing.Top = 9
       Caption = 'Opcje kompilacji bibliotek:'
       ParentColor = False
     end
@@ -209,7 +209,7 @@ object Form1: TForm1
       AnchorSideTop.Side = asrCenter
       Left = 175
       Height = 23
-      Top = 38
+      Top = 39
       Width = 59
       BorderSpacing.Left = 4
       Caption = '-fPIC'
@@ -222,7 +222,7 @@ object Form1: TForm1
       AnchorSideTop.Side = asrCenter
       Left = 585
       Height = 23
-      Top = 38
+      Top = 39
       Width = 377
       BorderSpacing.Left = 4
       Caption = 'Uaktualniaj automatycznie pliki bibliotek po kompilacji'
@@ -236,7 +236,7 @@ object Form1: TForm1
       AnchorSideTop.Control = cbPIC
       Left = 294
       Height = 23
-      Top = 38
+      Top = 39
       Width = 49
       BorderSpacing.Left = 4
       Caption = '-O1'
@@ -248,7 +248,7 @@ object Form1: TForm1
       AnchorSideTop.Control = cbPIC
       Left = 347
       Height = 23
-      Top = 38
+      Top = 39
       Width = 51
       BorderSpacing.Left = 4
       Caption = '-O2'
@@ -260,7 +260,7 @@ object Form1: TForm1
       AnchorSideTop.Control = cbPIC
       Left = 402
       Height = 23
-      Top = 38
+      Top = 39
       Width = 51
       BorderSpacing.Left = 4
       Caption = '-O3'
@@ -272,7 +272,7 @@ object Form1: TForm1
       AnchorSideTop.Control = cbPIC
       Left = 457
       Height = 23
-      Top = 38
+      Top = 39
       Width = 52
       BorderSpacing.Left = 4
       Caption = '-O4'
@@ -285,7 +285,7 @@ object Form1: TForm1
       AnchorSideTop.Side = asrCenter
       Left = 513
       Height = 23
-      Top = 38
+      Top = 39
       Width = 68
       BorderSpacing.Left = 4
       Caption = '-Ofast'
@@ -297,7 +297,7 @@ object Form1: TForm1
       AnchorSideTop.Control = cbPIC
       Left = 238
       Height = 23
-      Top = 38
+      Top = 39
       Width = 52
       BorderSpacing.Left = 4
       Caption = '-O0'
@@ -305,12 +305,39 @@ object Form1: TForm1
       TabOrder = 9
       TabStop = True
     end
+    object Label8: TLabel
+      AnchorSideLeft.Control = CheckBox4
+      AnchorSideLeft.Side = asrBottom
+      AnchorSideTop.Control = CheckBox4
+      AnchorSideTop.Side = asrCenter
+      Left = 970
+      Height = 19
+      Top = 41
+      Width = 178
+      BorderSpacing.Left = 8
+      Caption = 'Hasło administratora sudo:'
+      ParentColor = False
+    end
+    object spassword: TEdit
+      AnchorSideLeft.Control = Label8
+      AnchorSideLeft.Side = asrBottom
+      AnchorSideTop.Control = Label8
+      AnchorSideTop.Side = asrCenter
+      Left = 1152
+      Height = 31
+      Top = 35
+      Width = 172
+      BorderSpacing.Left = 4
+      EchoMode = emPassword
+      PasswordChar = '*'
+      TabOrder = 16
+    end
   end
   object Memo1: TMemo
     Left = 0
     Height = 90
     Top = 581
-    Width = 928
+    Width = 1374
     Align = alBottom
     Font.Height = -13
     Font.Name = 'Monospace'
@@ -323,7 +350,7 @@ object Form1: TForm1
     Left = 0
     Height = 5
     Top = 576
-    Width = 928
+    Width = 1374
     Align = alBottom
     ResizeAnchor = akBottom
   end
@@ -335,9 +362,9 @@ object Form1: TForm1
     AnchorSideRight.Side = asrBottom
     AnchorSideBottom.Control = Splitter1
     Left = 0
-    Height = 456
-    Top = 120
-    Width = 928
+    Height = 452
+    Top = 124
+    Width = 1374
     ActivePage = TabSheet1
     Anchors = [akTop, akLeft, akRight, akBottom]
     PopupMenu = PopupMenu1
@@ -348,13 +375,13 @@ object Form1: TForm1
     OnChanging = PageControl1Changing
     object TabSheet1: TTabSheet
       Caption = 'Main'
-      ClientHeight = 452
-      ClientWidth = 869
+      ClientHeight = 448
+      ClientWidth = 1315
       inline SynEdit1: TSynEdit
         Left = 0
-        Height = 426
+        Height = 422
         Top = 26
-        Width = 869
+        Width = 1315
         Align = alClient
         Anchors = [akRight, akBottom]
         Font.Height = 13
@@ -856,7 +883,7 @@ object Form1: TForm1
         Left = 0
         Height = 26
         Top = 0
-        Width = 869
+        Width = 1315
         Align = alTop
         BevelInner = bvRaised
         BevelOuter = bvLowered
@@ -991,7 +1018,7 @@ object Form1: TForm1
     Left = 689
     Height = 27
     Top = 29
-    Width = 239
+    Width = 685
     Anchors = [akTop, akLeft, akRight]
     BorderSpacing.Left = 2
     BorderSpacing.Top = 2
@@ -1061,15 +1088,6 @@ object Form1: TForm1
     OnStopTimer = Timer1StopTimer
     Left = 616
     Top = 115
-  end
-  object mess: TExtMessage
-    Caption = '<Auto>'
-    HelpContext = 0
-    PosTop = 0
-    PosLeft = 0
-    StringToCR = '^'
-    Left = 616
-    Top = 192
   end
   object PopupMenu1: TPopupMenu
     Left = 217
