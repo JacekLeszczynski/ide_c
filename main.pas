@@ -112,7 +112,7 @@ type
     procedure NiezapisanePliki;
     function compile: string;
     procedure compile_libraries;
-    procedure compile_lib(aFile,aLib,aDyrektywy: string);
+    procedure compile_lib(aFile,aLib,aDyrektywy: string; aDLL: boolean = false; aWin32: boolean = false);
   public
 
   end;
@@ -726,8 +726,9 @@ end;
 procedure TForm1.compile_libraries;
 var
   i,j: integer;
-  s,s1,s2,s3: string;
+  s,s1,s2,s3,s4: string;
   fsource,fnazwa,x: string;
+  win32: boolean;
 begin
   Memo1.Lines.Add('*** Kompilacja Bibliotek ***');
   for i:=0 to list2.Count-1 do
@@ -750,6 +751,31 @@ begin
         fsource:=files[i+1];
         Memo1.Lines.Add(' - '+fsource+' => '+fnazwa);
         compile_lib(fsource,fnazwa,x);
+      end;
+    end else
+    if pos('/* BIBLIOTEKA_DLL:',s)>0 then
+    begin
+      win32:=false;
+      s:=StringReplace(s,'/*','',[]);
+      s:=StringReplace(s,'*/','',[]);
+      s:=trim(s);
+      s1:=trim(wGetLineToStr(s,1,':'));
+      s2:=trim(wGetLineToStr(s,2,':'));
+      s3:=trim(wGetLineToStr(s,3,':'));
+      if s3='' then s4:=trim(wGetLineToStr(s2,1,' ')) else
+      begin
+        win32:=s2='32';
+        s4:=trim(wGetLineToStr(s3,1,' '));
+      end;
+      fnazwa:=s4+'.dll';
+      if (s1='BIBLIOTEKA_DLL') and ((pos(','+IntToStr(i)+',',s_pliki)>0) or (not FileExists(fnazwa))) then
+      begin
+        x:='';
+        for j:=2 to wGetLineCount(s2,' ') do x:=x+' '+wGetLineToStr(s2,j,' ');
+        x:=trim(x);
+        fsource:=files[i+1];
+        Memo1.Lines.Add(' - '+fsource+' => '+fnazwa);
+        compile_lib(fsource,fnazwa,x,true,win32);
       end;
     end;
   end;
@@ -779,19 +805,28 @@ end;
   #gcc -O3 -shared -o libtest.so -fPIC test.c
   #gcc -O3 -shared -o libtest.so -Wall test.c
 }
-procedure TForm1.compile_lib(aFile, aLib, aDyrektywy: string);
+procedure TForm1.compile_lib(aFile, aLib, aDyrektywy: string; aDLL: boolean;
+  aWin32: boolean);
 var
   pom,s: string;
   es: integer;
   b: boolean;
   i: integer;
 begin
+  {
+  gcc -c -fpic LibECode.c
+  gcc -shared -o libecode_c.so LibECode.o -lcjson
+  }
   pom:=ExtractFilePath(aFile);
-  process3.Executable:='gcc';
+  if aDLL then
+  begin
+    if aWin32 then process3.Executable:='i686-w64-mingw32-gcc' else process3.Executable:='x86_64-w64-mingw32-gcc';
+  end else process3.Executable:='gcc';
   process3.CurrentDirectory:=pom;
+  //gcc -c -fpic library.c
   process3.Parameters.Clear;
+  process3.Parameters.Add('-c');
   if cbPIC.Checked then process3.Parameters.Add('-fPIC');
-  process3.Parameters.Add('-shared');
   if not rb0.Checked then
   begin
     if rb1.Checked then process3.Parameters.Add('-O1');
@@ -800,21 +835,39 @@ begin
     if rb4.Checked then process3.Parameters.Add('-O4');
     if cbFast.Checked then process3.Parameters.Add('-Ofast');
   end;
-  for i:=1 to wGetLineCount(aDyrektywy,' ') do
+  if aDLL then
   begin
-    s:=wGetLineToStr(aDyrektywy,i,' ');
-    process3.Parameters.Add(s);
-  end;
-  if aLib<>'' then
-  begin
-    process3.Parameters.Add('-o');
-    process3.Parameters.Add(aLib);
+    process3.Parameters.Add('-march=native');
   end;
   process3.Parameters.Add(ExtractFileName(aFile));
   process3.Execute;
   while process3.Active do application.ProcessMessages;
   es:=process3.ExitStatus;
   process3.Terminate(0);
+
+  if es=0 then
+  begin
+    //gcc -shared -o liblibrary.so library.o -lcJSON
+    process3.Parameters.Clear;
+    process3.Parameters.Add('-shared');
+    if aLib<>'' then
+    begin
+      process3.Parameters.Add('-o');
+      process3.Parameters.Add(aLib);
+    end;
+    process3.Parameters.Add(ChangeFileExt(ExtractFileName(aFile),'.o'));
+    for i:=1 to wGetLineCount(aDyrektywy,' ') do
+    begin
+      s:=wGetLineToStr(aDyrektywy,i,' ');
+      Memo1.Lines.Add(' + dyrektywa: '+s);
+      process3.Parameters.Add(s);
+    end;
+    process3.Execute;
+    while process3.Active do application.ProcessMessages;
+    es:=process3.ExitStatus;
+    process3.Terminate(0);
+  end;
+
   if (es=0) and CheckBox4.Checked then
   begin
     s:=trim(spassword.Text);
