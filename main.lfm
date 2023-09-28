@@ -1,18 +1,18 @@
 object Form1: TForm1
-  Left = 2234
+  Left = 269
   Height = 671
-  Top = 163
-  Width = 1374
+  Top = 136
+  Width = 1562
   Caption = 'Laz IDE Ansi C'
   ClientHeight = 671
-  ClientWidth = 1374
+  ClientWidth = 1562
   KeyPreview = True
   OnClose = FormClose
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnKeyDown = FormKeyDown
   OnShow = FormShow
-  SessionProperties = 'cDir.Text;CheckBox1.Checked;CheckBox4.Checked;cHost.Text;cPass.Text;cUser.Text;dyrektywy.Text;Height;Left;Memo1.Height;Top;Width;WindowState;zrodlo.FileName;cbPIC.Checked;cbFast.Checked;rb0.Checked;rb1.Checked;rb2.Checked;rb3.Checked;rb4.Checked'
+  SessionProperties = 'cbFast.Checked;cbPIC.Checked;cDir.Text;CheckBox1.Checked;CheckBox4.Checked;cHost.Text;cPass.Text;cUser.Text;dyrektywy.Text;Height;Left;Memo1.Height;rb0.Checked;rb1.Checked;rb2.Checked;rb3.Checked;rb4.Checked;Top;Width;WindowState;zrodlo.FileName;ccmp.ItemIndex'
   LCLVersion = '2.0.12.0'
   object zrodlo: TFileNameEdit
     AnchorSideLeft.Control = Label2
@@ -23,7 +23,7 @@ object Form1: TForm1
     Left = 80
     Height = 27
     Top = 0
-    Width = 1294
+    Width = 1482
     FilterIndex = 0
     HideDirectories = False
     ButtonWidth = 23
@@ -45,12 +45,12 @@ object Form1: TForm1
     Left = 0
     Height = 68
     Top = 56
-    Width = 1374
+    Width = 1562
     Anchors = [akTop, akLeft, akRight]
     BevelOuter = bvNone
     ClientHeight = 68
-    ClientWidth = 1374
-    TabOrder = 5
+    ClientWidth = 1562
+    TabOrder = 6
     object uELED1: TuELED
       AnchorSideLeft.Control = BitBtn4
       AnchorSideLeft.Side = asrBottom
@@ -157,11 +157,11 @@ object Form1: TForm1
       Left = 724
       Height = 31
       Top = 2
-      Width = 646
+      Width = 834
       Anchors = [akTop, akLeft, akRight]
       BorderSpacing.Left = 4
       BorderSpacing.Right = 4
-      TabOrder = 5
+      TabOrder = 7
     end
     object BitBtn6: TBitBtn
       AnchorSideLeft.Control = uELED1
@@ -173,7 +173,7 @@ object Form1: TForm1
       Width = 139
       Caption = 'Wyślij na serwer'
       OnClick = BitBtn6Click
-      TabOrder = 6
+      TabOrder = 5
     end
     object CheckBox1: TCheckBox
       AnchorSideLeft.Control = BitBtn6
@@ -188,7 +188,7 @@ object Form1: TForm1
       Caption = 'Wykonaj mimo!'
       Font.Color = clRed
       ParentFont = False
-      TabOrder = 7
+      TabOrder = 6
     end
     object Label7: TLabel
       AnchorSideLeft.Control = BitBtn1
@@ -337,20 +337,20 @@ object Form1: TForm1
     Left = 0
     Height = 90
     Top = 581
-    Width = 1374
+    Width = 1562
     Align = alBottom
     Font.Height = -13
     Font.Name = 'Monospace'
     ParentFont = False
     ScrollBars = ssAutoBoth
-    TabOrder = 7
+    TabOrder = 8
   end
   object Splitter1: TSplitter
     Cursor = crVSplit
     Left = 0
     Height = 5
     Top = 576
-    Width = 1374
+    Width = 1562
     Align = alBottom
     ResizeAnchor = akBottom
   end
@@ -364,24 +364,24 @@ object Form1: TForm1
     Left = 0
     Height = 452
     Top = 124
-    Width = 1374
+    Width = 1562
     ActivePage = TabSheet1
     Anchors = [akTop, akLeft, akRight, akBottom]
     PopupMenu = PopupMenu1
     TabIndex = 0
-    TabOrder = 9
+    TabOrder = 10
     TabPosition = tpLeft
     OnChange = PageControl1Change
     OnChanging = PageControl1Changing
     object TabSheet1: TTabSheet
       Caption = 'Main'
       ClientHeight = 448
-      ClientWidth = 1315
+      ClientWidth = 1503
       inline SynEdit1: TSynEdit
         Left = 0
         Height = 422
         Top = 26
-        Width = 1315
+        Width = 1503
         Align = alClient
         Anchors = [akRight, akBottom]
         Font.Height = 13
@@ -883,7 +883,7 @@ object Form1: TForm1
         Left = 0
         Height = 26
         Top = 0
-        Width = 1315
+        Width = 1503
         Align = alTop
         BevelInner = bvRaised
         BevelOuter = bvLowered
@@ -907,38 +907,39 @@ object Form1: TForm1
     ParentFont = False
   end
   object Label3: TLabel
-    AnchorSideTop.Control = cHost
+    AnchorSideLeft.Control = crk
+    AnchorSideLeft.Side = asrBottom
+    AnchorSideTop.Control = crk
     AnchorSideTop.Side = asrCenter
-    AnchorSideRight.Control = cHost
-    Left = 15
+    Left = 414
     Height = 19
     Top = 33
     Width = 63
-    Anchors = [akTop, akRight]
-    BorderSpacing.Right = 2
+    BorderSpacing.Left = 4
     Caption = 'Host FTP:'
     ParentColor = False
   end
   object cHost: TEdit
-    AnchorSideLeft.Control = zrodlo
-    AnchorSideTop.Control = zrodlo
-    AnchorSideTop.Side = asrBottom
-    Left = 80
+    AnchorSideLeft.Control = Label3
+    AnchorSideLeft.Side = asrBottom
+    AnchorSideTop.Control = Label3
+    AnchorSideTop.Side = asrCenter
+    Left = 479
     Height = 27
     Top = 29
     Width = 152
-    BorderSpacing.Top = 2
+    BorderSpacing.Left = 2
     Font.Height = -13
     Font.Name = 'Liberation Mono'
     ParentFont = False
-    TabOrder = 1
+    TabOrder = 2
   end
   object Label4: TLabel
     AnchorSideLeft.Control = cHost
     AnchorSideLeft.Side = asrBottom
     AnchorSideTop.Control = cHost
     AnchorSideTop.Side = asrCenter
-    Left = 236
+    Left = 635
     Height = 19
     Top = 33
     Width = 35
@@ -951,7 +952,7 @@ object Form1: TForm1
     AnchorSideLeft.Side = asrBottom
     AnchorSideTop.Control = Label4
     AnchorSideTop.Side = asrCenter
-    Left = 273
+    Left = 672
     Height = 27
     Top = 29
     Width = 152
@@ -960,14 +961,14 @@ object Form1: TForm1
     Font.Height = -13
     Font.Name = 'Liberation Mono'
     ParentFont = False
-    TabOrder = 2
+    TabOrder = 3
   end
   object Label5: TLabel
     AnchorSideLeft.Control = cUser
     AnchorSideLeft.Side = asrBottom
     AnchorSideTop.Control = cHost
     AnchorSideTop.Side = asrCenter
-    Left = 429
+    Left = 828
     Height = 19
     Top = 33
     Width = 43
@@ -980,7 +981,7 @@ object Form1: TForm1
     AnchorSideLeft.Side = asrBottom
     AnchorSideTop.Control = Label5
     AnchorSideTop.Side = asrCenter
-    Left = 474
+    Left = 873
     Height = 27
     Top = 29
     Width = 110
@@ -993,14 +994,14 @@ object Form1: TForm1
     ParentFont = False
     PasswordChar = '*'
     TabStop = False
-    TabOrder = 6
+    TabOrder = 7
   end
   object Label6: TLabel
     AnchorSideLeft.Control = cPass
     AnchorSideLeft.Side = asrBottom
     AnchorSideTop.Control = cHost
     AnchorSideTop.Side = asrCenter
-    Left = 588
+    Left = 987
     Height = 19
     Top = 33
     Width = 99
@@ -1015,17 +1016,17 @@ object Form1: TForm1
     AnchorSideTop.Side = asrCenter
     AnchorSideRight.Control = zrodlo
     AnchorSideRight.Side = asrBottom
-    Left = 689
+    Left = 1088
     Height = 27
     Top = 29
-    Width = 685
+    Width = 474
     Anchors = [akTop, akLeft, akRight]
     BorderSpacing.Left = 2
     BorderSpacing.Top = 2
     Font.Height = -13
     Font.Name = 'Liberation Mono'
     ParentFont = False
-    TabOrder = 4
+    TabOrder = 5
   end
   object Edit1: TEdit
     AnchorSideLeft.Control = cPass
@@ -1034,7 +1035,7 @@ object Form1: TForm1
     AnchorSideRight.Side = asrBottom
     AnchorSideBottom.Control = cPass
     AnchorSideBottom.Side = asrBottom
-    Left = 474
+    Left = 873
     Height = 27
     Top = 29
     Width = 110
@@ -1042,7 +1043,84 @@ object Form1: TForm1
     EchoMode = emPassword
     OnChange = Edit1Change
     PasswordChar = '*'
-    TabOrder = 3
+    TabOrder = 4
+  end
+  object Label9: TLabel
+    AnchorSideTop.Control = ccmp
+    AnchorSideTop.Side = asrCenter
+    AnchorSideRight.Control = ccmp
+    Left = 1
+    Height = 19
+    Top = 33
+    Width = 77
+    Anchors = [akTop, akRight]
+    BorderSpacing.Right = 2
+    Caption = 'Kompilator:'
+    ParentColor = False
+  end
+  object ccmp: TComboBox
+    AnchorSideLeft.Control = zrodlo
+    AnchorSideTop.Control = zrodlo
+    AnchorSideTop.Side = asrBottom
+    Left = 80
+    Height = 27
+    Top = 29
+    Width = 152
+    AutoSize = False
+    BorderSpacing.Top = 2
+    Font.Height = -12
+    Font.Name = 'Sans'
+    ItemHeight = 0
+    ItemIndex = 0
+    Items.Strings = (
+      'C: gcc (domyślnie)'
+      'D: dmd'
+      'D: gdc'
+      'CD: gcc + dmd'
+      'CD: gcc + gdc'
+    )
+    ParentFont = False
+    Style = csDropDownList
+    TabOrder = 1
+    Text = 'C: gcc (domyślnie)'
+  end
+  object Label10: TLabel
+    AnchorSideLeft.Control = ccmp
+    AnchorSideLeft.Side = asrBottom
+    AnchorSideTop.Control = ccmp
+    AnchorSideTop.Side = asrCenter
+    Left = 236
+    Height = 19
+    Top = 33
+    Width = 82
+    BorderSpacing.Left = 4
+    Caption = 'Rodzaj kodu:'
+    ParentColor = False
+  end
+  object crk: TComboBox
+    AnchorSideLeft.Control = Label10
+    AnchorSideLeft.Side = asrBottom
+    AnchorSideTop.Control = Label10
+    AnchorSideTop.Side = asrCenter
+    Left = 320
+    Height = 27
+    Top = 29
+    Width = 90
+    AutoSize = False
+    BorderSpacing.Left = 2
+    ItemHeight = 0
+    ItemIndex = 0
+    Items.Strings = (
+      'C'
+      'HTML'
+      'PHP'
+      'CSS'
+      'SQL'
+    )
+    OnChange = crkChange
+    Style = csDropDownList
+    TabOrder = 11
+    Text = 'C'
   end
   object SynCppSyn1: TSynCppSyn
     DefaultFilter = 'Pliki C++ (*.c,*.cpp,*.h,*.hpp,*.hh)|*.c;*.cpp;*.h;*.hpp;*.hh'
@@ -1050,8 +1128,8 @@ object Form1: TForm1
     CommentAttri.Foreground = clBlue
     CommentAttri.Style = [fsBold]
     StringAttri.Foreground = clBlue
-    Left = 217
-    Top = 115
+    Left = 144
+    Top = 376
   end
   object propstorage: TXMLPropStorage
     StoredValues = <>
@@ -1130,12 +1208,12 @@ object Form1: TForm1
     Top = 115
   end
   object OpenDialog1: TOpenDialog
-    Filter = 'Pliki źródeł|*.c;*.cpp;*.h|Wszystkie pliki|*.*'
+    Filter = 'Pliki źródeł języka C|*.c;*.cpp;*.h|Pliki źródeł języka D|*.d;*.di|Pliki stron internetowych|*.html;*php;*css|Pliki SQL|*.sql|Wszystkie pliki|*'
     Left = 312
     Top = 192
   end
   object SaveDialog1: TSaveDialog
-    Filter = 'Pliki źródeł|*.c|Pliki modułów|*.h'
+    Filter = 'Pliki źródeł języka C|*.c;*.cpp;*.h|Pliki źródeł języka D|*.d;*.di|Pliki stron internetowych|*.html;*php;*css|Pliki SQL|*.sql|Wszystkie pliki|*'
     Left = 400
     Top = 192
   end
@@ -1173,5 +1251,35 @@ object Form1: TForm1
     OnReadData = Process1ReadData
     Left = 312
     Top = 272
+  end
+  object SynHTMLSyn1: TSynHTMLSyn
+    DefaultFilter = 'Dokumenty HTML (*.htm,*.html)|*.htm;*.html'
+    Enabled = False
+    Left = 144
+    Top = 432
+  end
+  object SynPHPSyn1: TSynPHPSyn
+    DefaultFilter = 'Pliki PHP (*.php,*.php3,*.phtml,*.inc)|*.php;*.php3;*.phtml;*.inc'
+    Enabled = False
+    CommentAttri.Foreground = clBlue
+    CommentAttri.Style = [fsBold]
+    IdentifierAttri.Foreground = clMaroon
+    InvalidSymbolAttri.Foreground = clRed
+    StringAttri.Foreground = clBlue
+    Left = 144
+    Top = 488
+  end
+  object SynCssSyn1: TSynCssSyn
+    DefaultFilter = 'Kaskadowe arkusze stylów (*.css)|*.css'
+    Enabled = False
+    Left = 248
+    Top = 376
+  end
+  object SynSQLSyn1: TSynSQLSyn
+    DefaultFilter = 'Pliki SQL (*.sql)|*.sql'
+    Enabled = False
+    SQLDialect = sqlSybase
+    Left = 248
+    Top = 432
   end
 end

@@ -7,7 +7,8 @@ interface
 uses
   Classes, SysUtils, process, Forms, Controls, Graphics, Dialogs, EditBtn,
   ExtCtrls, Buttons, XMLPropStorage, StdCtrls, AsyncProcess, ComCtrls, Menus,
-  ueled, SynEdit, SynHighlighterCpp;
+  ueled, SynEdit, SynHighlighterCpp, SynHighlighterHTML, SynHighlighterPHP,
+  SynHighlighterCss, SynHighlighterSQL, SynCompletion;
 
 type
 
@@ -19,10 +20,14 @@ type
     cbPIC: TCheckBox;
     CheckBox4: TCheckBox;
     cHost: TEdit;
+    ccmp: TComboBox;
+    crk: TComboBox;
     cUser: TEdit;
     cPass: TEdit;
     cDir: TEdit;
     Edit1: TEdit;
+    Label10: TLabel;
+    Label9: TLabel;
     spassword: TEdit;
     Label8: TLabel;
     Label2: TLabel;
@@ -61,7 +66,11 @@ type
     rb0: TRadioButton;
     SaveDialog1: TSaveDialog;
     Splitter1: TSplitter;
+    SynCssSyn1: TSynCssSyn;
     SynEdit1: TSynEdit;
+    SynHTMLSyn1: TSynHTMLSyn;
+    SynPHPSyn1: TSynPHPSyn;
+    SynSQLSyn1: TSynSQLSyn;
     TabSheet1: TTabSheet;
     Timer1: TTimer;
     uELED1: TuELED;
@@ -75,6 +84,7 @@ type
     procedure BitBtn5Click(Sender: TObject);
     procedure BitBtn6Click(Sender: TObject);
     procedure cPassChange(Sender: TObject);
+    procedure crkChange(Sender: TObject);
     procedure Edit1Change(Sender: TObject);
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure FormCreate(Sender: TObject);
@@ -110,9 +120,12 @@ type
     procedure sfocus;
     function GetPlikWynikowy(aDyrektywy,aDefault: string): string;
     procedure NiezapisanePliki;
+    function test(aExt: string; var aKompilator: string): boolean;
     function compile: string;
     procedure compile_libraries;
     procedure compile_lib(aFile,aLib,aDyrektywy: string; aDLL: boolean = false; aWin32: boolean = false);
+    procedure SetRodzajKodu(aIndex: integer);
+    procedure UpdateRodzajCode(aTabIndex: integer = -1);
   public
 
   end;
@@ -311,6 +324,16 @@ begin
   Edit1.Text:=wDecryptString(cPass.Text,'tyreywufdfy736473rg',true);
 end;
 
+procedure TForm1.crkChange(Sender: TObject);
+begin
+  //writeln('crkChange',crk.ItemIndex);
+  case PageControl1.ActivePageIndex of
+    0: SynEdit1.Tag:=crk.ItemIndex;
+    else TSynEdit(list2[PageControl1.ActivePageIndex-1]).Tag:=crk.ItemIndex;
+  end;
+  UpdateRodzajCode;
+end;
+
 procedure TForm1.Edit1Change(Sender: TObject);
 begin
   cPass.Text:=wEncryptString(Edit1.Text,'tyreywufdfy736473rg',50);
@@ -447,6 +470,8 @@ end;
 
 procedure TForm1.PageControl1Change(Sender: TObject);
 begin
+  //writeln('PageControl1Change',PageControl1.TabIndex);
+  SetRodzajKodu(PageControl1.TabIndex);
   MenuItem2.Enabled:=PageControl1.TabIndex>0;
 end;
 
@@ -489,6 +514,7 @@ begin
   for i:=0 to files.Count-1 do TabRestore(i,files[i]);
   (* odtworzenie środowiska pracy *)
   s:=TStringList.Create;
+  //środowisko
   propstorage.ReadStrings('def_tabs',s);
   try
     for i:=0 to PageControl1.PageCount-1 do
@@ -496,10 +522,19 @@ begin
       if i=0 then SynEdit1.CaretY:=StrToInt(wGetLineToStr(s[i],2,',')) else
       TSynEdit(list2[i-1]).CaretY:=StrToInt(wGetLineToStr(s[i],2,','));
     end;
+    //rodzaj kodu
+    propstorage.ReadStrings('def_tabs_rodzaj_code',s);
+    for i:=0 to PageControl1.PageCount-1 do
+    begin
+      if i=0 then SynEdit1.Tag:=StrToInt(s[i]) else
+      TSynEdit(list2[i-1]).Tag:=StrToInt(s[i]);
+      UpdateRodzajCode(i);
+    end;
   finally
     s.Free;
   end;
   PageControl1.ActivePageIndex:=propstorage.ReadInteger('def_ActivePageIndex',0);
+  SetRodzajKodu(PageControl1.ActivePageIndex);
 end;
 
 procedure TForm1.propstorageSaveProperties(Sender: TObject);
@@ -511,12 +546,21 @@ begin
   propstorage.WriteStrings('def_files',files);
   s:=TStringList.Create;
   try
+    //środowisko
     for i:=0 to PageControl1.PageCount-1 do
     begin
       if i=0 then s.Add(IntToStr(SynEdit1.CaretX)+','+IntToStr(SynEdit1.CaretY))
       else        s.Add(IntToStr(TSynEdit(list2[i-1]).CaretX)+','+IntToStr(TSynEdit(list2[i-1]).CaretY));
     end;
     propstorage.WriteStrings('def_tabs',s);
+    //rodzaj kodu
+    s.Clear;
+    for i:=0 to PageControl1.PageCount-1 do
+    begin
+      if i=0 then s.Add(IntToStr(SynEdit1.Tag))
+      else        s.Add(IntToStr(TSynEdit(list2[i-1]).Tag));
+    end;
+    propstorage.WriteStrings('def_tabs_rodzaj_code',s);
   finally
     s.Free;
   end;
@@ -619,6 +663,7 @@ var
   b: TSynEdit;
   s: string;
 begin
+  writeln(aFile);
   s:=aFile;
   if aIndex=0 then
   begin
@@ -681,18 +726,52 @@ begin
   if s_pliki=',' then s_pliki:='';
 end;
 
+function TForm1.test(aExt: string; var aKompilator: string): boolean;
+var
+  x: string[2];
+  sc,sd: string;
+begin
+  case ccmp.ItemIndex of
+    0: begin x:='C'; sc:='gcc'; sd:=''; end;
+    1: begin x:='D'; sc:=''; sd:='dmd'; end;
+    2: begin x:='D'; sc:=''; sd:='gdc'; end;
+    3: begin x:='CD'; sc:='gcc'; sd:='dmd'; end;
+    4: begin x:='CD'; sc:='gcc'; sd:='gdc'; end;
+  end;
+  if (aExt='.c') and (sc<>'') then
+  begin
+    aKompilator:=sc;
+    result:=true;
+  end else
+  if (aExt='.d') and (sd<>'') then
+  begin
+    aKompilator:=sd;
+    result:=true;
+  end else begin
+    aKompilator:='';
+    result:=false;
+  end;
+end;
+
 function TForm1.compile: string;
 var
   i: integer;
-  s,pom,res: string;
-  b: boolean;
+  ext,kompilator,s,pom,res: string;
+  ok,b: boolean;
 begin
+  ext:=ExtractFileExt(zrodlo.FileName);
+  ok:=test(ext,kompilator);
+  if (not ok) or (kompilator='') then
+  begin
+    MessageDlg('Rozszerzenie plików nie zgadza się z wybraną opcją kompilacji. Przerywam.',mtWarning,[mbOK],0);
+    exit;
+  end;
   pom:=ChangeFileExt(ExtractFileName(zrodlo.FileName),'');
   res:=pom;
   b:=true;
   Memo1Compile;
   SaveFiles;
-  process1.Executable:='gcc';
+  process1.Executable:=kompilator;
   process1.CurrentDirectory:=ExtractFilePath(zrodlo.FileName);
   process1.Parameters.Clear;
   i:=1;
@@ -710,9 +789,13 @@ begin
   process1.Parameters.Add(ExtractFileName(zrodlo.FileName));
   if b then
   begin
-    process1.Parameters.Add('-o');
-    process1.Parameters.Add(pom);
+    if kompilator='dmd' then process1.Parameters.Add('-of='+pom) else
+    begin
+      process1.Parameters.Add('-o');
+      process1.Parameters.Add(pom);
+    end;
   end;
+  //if (pos(',0,',s_pliki)>0) or (not FileExists(pom)) then
   Memo1.Lines.Add('*** Kompilacja programu głównego ***');
   process1.Execute;
   while process1.Active do application.ProcessMessages;
@@ -734,6 +817,7 @@ begin
   for i:=0 to list2.Count-1 do
   begin
     s:=trim(TSynEdit(list2[i]).Lines[0]);
+    if pos('/* NONE */',s)>0 then continue;
     if pos('/* BIBLIOTEKA:',s)>0 then
     begin
       s:=StringReplace(s,'/*','',[]);
@@ -808,20 +892,28 @@ end;
 procedure TForm1.compile_lib(aFile, aLib, aDyrektywy: string; aDLL: boolean;
   aWin32: boolean);
 var
-  pom,s: string;
+  ext,kompilator,pom,s: string;
   es: integer;
-  b: boolean;
+  ok,b: boolean;
   i: integer;
 begin
   {
   gcc -c -fpic LibECode.c
   gcc -shared -o libecode_c.so LibECode.o -lcjson
   }
+  ext:=ExtractFileExt(aFile);
+  ok:=test(ext,kompilator);
+  if (not ok) or (kompilator='') or ((kompilator<>'gcc') and aDLL) then
+  begin
+    Memo1.Lines.Add('(!) Biblioteka: '+alib+' - pominięta. (!)');
+    exit;
+  end;
+
   pom:=ExtractFilePath(aFile);
   if aDLL then
   begin
     if aWin32 then process3.Executable:='i686-w64-mingw32-gcc' else process3.Executable:='x86_64-w64-mingw32-gcc';
-  end else process3.Executable:='gcc';
+  end else process3.Executable:=kompilator;
   process3.CurrentDirectory:=pom;
   //gcc -c -fpic library.c
   process3.Parameters.Clear;
@@ -852,8 +944,11 @@ begin
     process3.Parameters.Add('-shared');
     if aLib<>'' then
     begin
-      process3.Parameters.Add('-o');
-      process3.Parameters.Add(aLib);
+      if kompilator='dmd' then process3.Parameters.Add('-of='+aLib) else
+      begin
+        process3.Parameters.Add('-o');
+        process3.Parameters.Add(aLib);
+      end;
     end;
     process3.Parameters.Add(ChangeFileExt(ExtractFileName(aFile),'.o'));
     for i:=1 to wGetLineCount(aDyrektywy,' ') do
@@ -874,6 +969,41 @@ begin
     if s='' then b:=CopyFile(pom+aLib,'/usr/lib/'+aLib) else b:=wewnCopyFile(pom+aLib,'/usr/lib/'+aLib,s);
     if b then Memo1.Lines.Add(' - biblioteka "'+aLib+'" => skopiowana prawidłowo do katalogu LIB.') else
     Memo1.Lines.Add(' - biblioteka "'+aLib+'" => NIE skopiowana prawidłowo do katalogu LIB!');
+  end;
+end;
+
+procedure TForm1.SetRodzajKodu(aIndex: integer);
+begin
+  case aIndex of
+    0: crk.ItemIndex:=SynEdit1.Tag;
+    else crk.ItemIndex:=TSynEdit(list2[aIndex-1]).Tag;
+  end;
+end;
+
+procedure TForm1.UpdateRodzajCode(aTabIndex: integer);
+var
+  x,a: integer;
+begin
+  if aTabIndex=-1 then x:=PageControl1.ActivePageIndex else x:=aTabIndex;
+  if x=0 then
+  begin
+    a:=SynEdit1.Tag;
+    case a of
+      0: SynEdit1.Highlighter:=SynCppSyn1;
+      1: SynEdit1.Highlighter:=SynHTMLSyn1;
+      2: SynEdit1.Highlighter:=SynPHPSyn1;
+      3: SynEdit1.Highlighter:=SynCssSyn1;
+      4: SynEdit1.Highlighter:=SynSQLSyn1;
+    end;
+  end else begin
+    a:=TSynEdit(list2[x-1]).Tag;
+    case a of
+      0: TSynEdit(list2[x-1]).Highlighter:=SynCppSyn1;
+      1: TSynEdit(list2[x-1]).Highlighter:=SynHTMLSyn1;
+      2: TSynEdit(list2[x-1]).Highlighter:=SynPHPSyn1;
+      3: TSynEdit(list2[x-1]).Highlighter:=SynCssSyn1;
+      4: TSynEdit(list2[x-1]).Highlighter:=SynSQLSyn1;
+    end;
   end;
 end;
 
